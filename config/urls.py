@@ -22,6 +22,7 @@ urlpatterns = [
     # User management
     path("users/", include("api_moneypit.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
+    path("core/", include("api_moneypit.core.urls", namespace="core")),
     # Your stuff: custom urls includes go here
     # ...
     # Media files
