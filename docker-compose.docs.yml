@@ -1,0 +1,16 @@
+services:
+  docs:
+    image: api_moneypit_local_docs
+    container_name: api_moneypit_local_docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - ./.envs/.local/.django
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./api_moneypit:/app/api_moneypit:z
+    ports:
+      - '9000:9000'
+    command: /start-docs
