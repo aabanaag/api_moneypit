@@ -29,6 +29,8 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     image: api_moneypit_production_postgres
     container_name: api_moneypit_local_postgres
+    ports:
+      - '5432:5432'
     volumes:
       - api_moneypit_local_postgres_data:/var/lib/postgresql/data
       - api_moneypit_local_postgres_data_backups:/backups
@@ -44,10 +46,10 @@ services:
   redis:
     image: docker.io/redis:6
     container_name: api_moneypit_local_redis
-    
+
     volumes:
       - api_moneypit_local_redis_data:/data
-    
+
 
   celeryworker:
     <<: *django

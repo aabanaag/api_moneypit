@@ -1,6 +1,10 @@
-from django.db import models
-from django.conf import settings
 import uuid
+
+from django.conf import settings
+from django.core.validators import MinValueValidator
+from django.db import models
+
+from api_moneypit.core.constants import OrderPayload
 
 # Create your models here.
 
@@ -14,9 +18,14 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Ticker(models.Model):
-    symbol = models.CharField(max_length=10)
+class Ticker(BaseModel):
+    symbol = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=100)
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0.0)],
+    )
 
     def __str__(self):
         return self.symbol
@@ -24,25 +33,44 @@ class Ticker(models.Model):
 
 class Order(BaseModel):
     ORDER_STATUS_CHOICES = (
-        ('PENDING', 'Pending'),
-        ('COMPLETED', 'Completed'),
-        ('CANCELLED', 'Cancelled'),
+        ("PENDING", "Pending"),
+        ("COMPLETED", "Completed"),
+        ("CANCELLED", "Cancelled"),
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
-    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, related_name='orders')
-    qty = models.IntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='PENDING')
+
+    ORDER_TYPE_CHOICES = (
+        ("BUY", "Buy"),
+        ("SELL", "Sell"),
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="orders",
+    )
+    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, related_name="orders")
+    qty = models.IntegerField(validators=[MinValueValidator(0)])
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0.0)],
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=ORDER_STATUS_CHOICES,
+        default="PENDING",
+    )
+    type = models.CharField(max_length=10, choices=ORDER_TYPE_CHOICES, default="BUY")
 
     def __str__(self):
-        return f"{self.ticker.symbol} - {self.qty} - {self.price} - {self.status}"
+        return f"({self.id}) - {self.type}: {self.ticker.symbol}"
 
     @classmethod
-    def create_order(cls, user, ticker, qty, price):
+    def create_order(cls, payload: OrderPayload):
         return cls.objects.create(
-            user=user,
-            ticker=ticker,
-            qty=qty,
-            price=price
+            user=payload.user,
+            ticker=payload.ticker,
+            qty=payload.qty,
+            price=payload.price,
+            type=payload.order_type,
         )
-
