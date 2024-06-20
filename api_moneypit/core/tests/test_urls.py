@@ -33,3 +33,8 @@ def test_order_detail(order: Order):
 def test_bulk_order():
     assert reverse("api:core:order-bulk-order") == "/api/orders/bulk_order/"
     assert resolve("/api/orders/bulk_order/").view_name == "api:core:order-bulk-order"
+
+
+def test_total_order():
+    assert reverse("api:core:order-total-order") == "/api/orders/total_order/"
+    assert resolve("/api/orders/total_order/").view_name == "api:core:order-total-order"

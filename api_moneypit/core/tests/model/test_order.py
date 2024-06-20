@@ -22,7 +22,9 @@ def test_order_creation(user):
     price = 100
 
     ticker = TickerFactory.create(symbol="AAPL", name="Apple Inc.")
-    order = OrderFactory.create(ticker=ticker, user=user, qty=qty, price=price)
+    order = OrderFactory.create(
+        ticker=ticker, user=user, qty=qty, price=price, status="PENDING", type="BUY"
+    )
 
     assert order.id is not None
     assert order.user == user
@@ -57,7 +59,9 @@ def test_should_update_status_to_completed(user):
     Test order status update
     """
     ticker = TickerFactory.create(symbol="AAPL", name="Apple Inc.")
-    order = OrderFactory.create(ticker=ticker, user=user, qty=16, price=20.0)
+    order = OrderFactory.create(
+        ticker=ticker, user=user, qty=16, price=20.0, status="PENDING", type="BUY"
+    )
 
     # Check if order status is pending
     assert order.status == "PENDING"
