@@ -11,6 +11,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from api_moneypit.core.models import BulkOrder
+from api_moneypit.core.tests.factories import OrderFactory
 from api_moneypit.core.tests.factories import TickerFactory
 from api_moneypit.users.tests.factories import UserFactory
 
@@ -20,7 +21,9 @@ class OrderTestCase(APITestCase):
     def setUp(self):
         super().setUp()
 
-        self.ticker = TickerFactory.create(symbol="AAPL")
+        self.ticker = TickerFactory.create(
+            symbol="AAPL", name="Apple Inc.", price=100.00
+        )
         TickerFactory.create_batch(9)
 
         self.ticker.refresh_from_db()
@@ -151,3 +154,116 @@ class OrderTestCase(APITestCase):
 
         bulk_order = BulkOrder.objects.filter(id=response.json()["id"])
         self.assertTrue(bulk_order.exists())
+
+    def test_should_get_total_order(self):
+        self.client.force_login(self.user)
+
+        ticker_2 = TickerFactory.create(symbol="GO", name="Google Inc.", price=200.00)
+
+        OrderFactory.create_batch(
+            10,
+            user=self.user,
+            price=100.00,
+            qty=10,
+            ticker=self.ticker,
+            type="BUY",
+            status="COMPLETED",
+        )
+        OrderFactory.create_batch(
+            5,
+            user=self.user,
+            price=100.00,
+            qty=10,
+            ticker=self.ticker,
+            type="SELL",
+            status="COMPLETED",
+        )
+        OrderFactory.create_batch(
+            10, user=self.user, price=200.00, qty=10, ticker=ticker_2, type="BUY"
+        )
+
+        url = reverse("api:core:order-total-order")
+        url = f"{url}?type=BUY&symbol={self.ticker.symbol}"
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["total_order"], 10000)
+
+    def test_should_not_get_total_order_for_unauthenticated_user(self):
+        url = reverse("api:core:order-total-order")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_should_get_total_sell_order(self):
+        self.client.force_login(self.user)
+
+        OrderFactory.create_batch(
+            2,
+            user=self.user,
+            price=100.00,
+            qty=10,
+            ticker=self.ticker,
+            type="SELL",
+            status="COMPLETED",
+        )
+        OrderFactory.create_batch(
+            3,
+            user=self.user,
+            price=100.00,
+            qty=10,
+            ticker=self.ticker,
+            type="BUY",
+            status="COMPLETED",
+        )
+        OrderFactory.create_batch(
+            3, user=self.user, price=200.00, qty=10, ticker=self.ticker, type="BUY"
+        )
+
+        url = reverse("api:core:order-total-order")
+        url = f"{url}?type=SELL&symbol={self.ticker.symbol}"
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["total_order"], 2000)
+
+    def test_should_total_order_for_specific_user(self):
+        OrderFactory.create_batch(
+            2,
+            user=self.user,
+            price=100.00,
+            qty=10,
+            ticker=self.ticker,
+            type="SELL",
+            status="COMPLETED",
+        )
+        OrderFactory.create_batch(
+            3,
+            user=self.user,
+            price=100.00,
+            qty=10,
+            ticker=self.ticker,
+            type="BUY",
+            status="COMPLETED",
+        )
+
+        user_2 = UserFactory()
+        ticker = TickerFactory.create(symbol="GO", name="Go", price=100.00)
+        OrderFactory.create_batch(
+            3,
+            user=user_2,
+            price=100.00,
+            qty=10,
+            ticker=ticker,
+            type="SELL",
+            status="COMPLETED",
+        )
+
+        self.client.force_login(user_2)
+
+        url = reverse("api:core:order-total-order")
+        url = f"{url}?type=BUY&symbol={self.ticker.symbol}"
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["total_order"], 0)

@@ -3,6 +3,7 @@ Core factories
 """
 
 from factory import Faker
+from factory import Iterator
 from factory import SubFactory
 from factory.django import DjangoModelFactory
 
@@ -25,6 +26,8 @@ class OrderFactory(DjangoModelFactory):
     ticker = SubFactory(TickerFactory)
     qty = Faker("random_int", min=1, max=100)
     price = Faker("pyfloat", positive=True, max_value=1000.0)
+    type = Iterator(Order.ORDER_TYPE_CHOICES, getter=lambda c: c[0])
+    status = Iterator(Order.ORDER_STATUS_CHOICES, getter=lambda c: c[0])
 
     class Meta:
         model = Order

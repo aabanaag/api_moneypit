@@ -17,3 +17,8 @@ def test_update():
 def test_redirect():
     assert reverse("users:redirect") == "/users/~redirect/"
     assert resolve("/users/~redirect/").view_name == "users:redirect"
+
+
+def test_me():
+    assert reverse("api:user-me") == "/api/users/me/"
+    assert resolve("/api/users/me/").view_name == "api:user-me"
