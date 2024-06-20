@@ -7,7 +7,8 @@ hiredis==2.3.2  # https://github.com/redis/hiredis-py
 celery==5.4.0  # pyup: < 6.0  # https://github.com/celery/celery
 django-celery-beat==2.6.0  # https://github.com/celery/django-celery-beat
 flower==2.0.1  # https://github.com/mher/flower
-yfinance==0.2.40 # https://github.com/ranaroussi/yfinance
+pandas==2.2.2 # https://github.com/pandas-dev/pandas
+django-import-export==4.0.9 # https://github.com/django-import-export/django-import-export
 
 # Django
 # ------------------------------------------------------------------------------

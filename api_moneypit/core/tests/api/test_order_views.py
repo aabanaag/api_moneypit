@@ -2,11 +2,15 @@
 Test cases for Order views
 """
 
+import io
+
+import pandas as pd
 import pytest
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from api_moneypit.core.models import BulkOrder
 from api_moneypit.core.tests.factories import TickerFactory
 from api_moneypit.users.tests.factories import UserFactory
 
@@ -109,3 +113,41 @@ class OrderTestCase(APITestCase):
         response = self.client.patch(url, data={"status": "COMPLETED"}, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_should_upload_bulk_order(self):
+        self.client.force_login(self.user)
+
+        data = {
+            "symbol": ["AAPL", "GOOGL", "MSFT"],
+            "qty": [10, 20, 30],
+            "price": [100.00, 200.00, 300.00],
+            "type": ["BUY", "SELL", "BUY"],
+        }
+        dataframe = pd.DataFrame(data)
+
+        csv_file = io.StringIO()
+        dataframe.to_csv(csv_file, index=False)
+        csv_file.seek(0)  # Move to the start of the file
+
+        # Create a SimpleUploadedFile object to simulate file upload
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        uploaded_file = SimpleUploadedFile(
+            name="test.csv",
+            content=csv_file.getvalue().encode("utf-8"),
+            content_type="text/csv",
+        )
+
+        url = reverse("api:core:order-bulk-order")
+        response = self.client.post(
+            url,
+            data={"file": uploaded_file},
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.json()["is_processed"])
+        self.assertIsNotNone(response.json()["user"])
+
+        bulk_order = BulkOrder.objects.filter(id=response.json()["id"])
+        self.assertTrue(bulk_order.exists())

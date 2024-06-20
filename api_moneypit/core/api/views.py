@@ -1,6 +1,10 @@
+from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from api_moneypit.core.api.serializers import BulkOrderSerializer
 from api_moneypit.core.api.serializers import OrderCreateUpdateSerializer
 from api_moneypit.core.api.serializers import OrderListSerializer
 from api_moneypit.core.api.serializers import OrderRetrieveSerializer
@@ -29,3 +33,10 @@ class OrderViewSet(ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=["post"], url_path="bulk_order")
+    def bulk_order(self, request, pk=None):
+        serializer = BulkOrderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
