@@ -4,8 +4,14 @@ API for MoneyPit
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Heroku](https://pyheroku-badge.fly.dev/?app=frozen-reaches-54431&style=flat)](https://frozen-reaches-54431-fb631ef5e73b.herokuapp.com/)
 
 License: MIT
+
+## Production
+This was deployed on Heroku. The link is [here](https://frozen-reaches-54431-fb631ef5e73b.herokuapp.com/)
+
+Also, a postman collection is available on the root directory for import
 
 ## Settings
 
