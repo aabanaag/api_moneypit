@@ -152,7 +152,10 @@ ignore = [
           # https://github.com/astral-sh/ruff/issues/7871
     "PT009",
     "PT012",
-    "RET505"
+    "RET505",
+    "PGH004",
+    "COM812",
+    "ISC001"
 ]
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]

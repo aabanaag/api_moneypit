@@ -74,3 +74,16 @@ class Order(BaseModel):
             price=payload.price,
             type=payload.order_type,
         )
+
+
+class BulkOrder(BaseModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="bulk_orders",
+    )
+    file = models.FileField(upload_to="bulk_orders/")
+    is_processed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"({self.id}) - {self.file.name}"

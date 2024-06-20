@@ -4,6 +4,7 @@
 from pathlib import Path
 
 import environ
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # api_moneypit/
@@ -82,12 +83,13 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
+    "import_export",
 ]
 
 LOCAL_APPS = [
     "api_moneypit.users",
     # Your stuff: custom apps go here
-    "api_moneypit.core"
+    "api_moneypit.core",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -345,3 +347,14 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+CELERY_BEAT_SCHEDULE = {
+    "check_order_status": {
+        "task": "api_moneypit.core.tasks.check_order_status",
+        "schedule": crontab(hour="*/5", minute="0"),
+    },
+    "check_bulk_order": {
+        "task": "api_moneypit.core.tasks.check_bulk_order",
+        "schedule": crontab(hour="6,18", minute="0"),
+    },
+}

@@ -28,3 +28,8 @@ def test_order_detail(order: Order):
         == f"/api/orders/{order.pk}/"
     )
     assert resolve(f"/api/orders/{order.pk}/").view_name == "api:core:order-detail"
+
+
+def test_bulk_order():
+    assert reverse("api:core:order-bulk-order") == "/api/orders/bulk_order/"
+    assert resolve("/api/orders/bulk_order/").view_name == "api:core:order-bulk-order"
