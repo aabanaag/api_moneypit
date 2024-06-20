@@ -14,7 +14,9 @@ from api_moneypit.core.api.serializers import BulkOrderSerializer
 from api_moneypit.core.api.serializers import OrderCreateUpdateSerializer
 from api_moneypit.core.api.serializers import OrderListSerializer
 from api_moneypit.core.api.serializers import OrderRetrieveSerializer
+from api_moneypit.core.api.serializers import TickerSerializer
 from api_moneypit.core.models import Order
+from api_moneypit.core.models import Ticker
 from api_moneypit.core.permissions import IsOwnerOrReadOnly
 
 
@@ -73,3 +75,9 @@ class OrderViewSet(ModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class TickerViewSet(ModelViewSet):
+    queryset = Ticker.objects.all()
+    serializer_class = TickerSerializer
+    permission_classes = [IsAuthenticated]
