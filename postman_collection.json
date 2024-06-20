@@ -1,0 +1,196 @@
+{
+	"info": {
+		"_postman_id": "ed4a93d5-f444-460e-8f44-553ec5d8a9dc",
+		"name": "MoneyPit",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48815"
+	},
+	"item": [
+		{
+			"name": "Orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/api/orders",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Tickers",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "In$tance08",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user@local.me",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/api/tickers",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"tickers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Orders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ticker\": \"54995e5b-1518-4cba-b102-0e1f92309263\",\n    \"qty\": 5,\n    \"price\": 277.01,\n    \"type\": \"BUY\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/orders/",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"orders",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/jongbanaag/Downloads/money_pit_bulk_order - Sheet1.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/orders/bulk_order/",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"orders",
+						"bulk_order",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Total Order",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/api/orders/total_order?type=BUY&status=COMPLETED&symbol=AAPL",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"orders",
+						"total_order"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "BUY"
+						},
+						{
+							"key": "status",
+							"value": "COMPLETED"
+						},
+						{
+							"key": "symbol",
+							"value": "AAPL"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "In$tance08",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "user@local.me",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "localhost:8000",
+			"type": "string"
+		}
+	]
+}
