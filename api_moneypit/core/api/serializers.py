@@ -1,9 +1,9 @@
 import pandas as pd
 from rest_framework import serializers
 
-from api_moneypit.core.exceptions import InvalidCSVFileColumns
+from api_moneypit.core.exceptions import InvalidCSVFileColumnsError
 from api_moneypit.core.exceptions import InvalidCSVFileError
-from api_moneypit.core.exceptions import InvalidCSVFileMissingValues
+from api_moneypit.core.exceptions import InvalidCSVFileMissingValuesError
 from api_moneypit.core.exceptions import InvalidFileTypeError
 from api_moneypit.core.models import BulkOrder
 from api_moneypit.core.models import Order
@@ -54,10 +54,10 @@ class BulkOrderSerializer(serializers.ModelSerializer):
 
         required_columns = ["symbol", "qty", "price", "type"]
         if not all(column in csv_dataframe.columns for column in required_columns):
-            raise InvalidCSVFileColumns
+            raise InvalidCSVFileColumnsError
 
         if csv_dataframe.isna().to_numpy().any():
-            raise InvalidCSVFileMissingValues
+            raise InvalidCSVFileMissingValuesError
 
         return value
 
